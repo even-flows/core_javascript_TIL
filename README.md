@@ -7,7 +7,7 @@
 ### 프로젝트 구조
 
 책 이름/챕터 이름/작성자 닉네임<br>
-ex) core_js/01장/dosangdev
+ex) 01장/dosangdev
 
 
 ### Member
