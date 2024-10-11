@@ -1,4 +1,4 @@
-# 🐥 even-flows의 스터디
+# 🥩 even-flows의 스터디
 
 ## core_javascript
 각자 코어 자바스크립트을 읽고 공부한 내용을 기록합니다.
