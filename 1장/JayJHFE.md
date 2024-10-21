@@ -49,7 +49,8 @@
     이 새로 추가된다는 뜻이다.
 
 ## 객체 가변성의 문제점
-    ```javascript
+
+```javascript
     var user = {
 	name: 'Jaenam',
   	gender: 'male'
@@ -68,5 +69,5 @@
     }
     console.log(user.name, user2.name); // Jung Jung
     console.log(user === user2); // true
-    ```
+```
 
