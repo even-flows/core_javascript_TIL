@@ -93,4 +93,44 @@ if (user !== user2) {
 console.log(user.name, user2.name); // Jaenam Jung
 console.log(user === user2); // false
 ```
+### 얕은 복사(shalloow copy)와 깊은 복사(deep copy)
+	얕은 복사
+	중첩된 객체에서 참조형 데이터가 저장된 프로퍼티를 복사할 때 그 주솟값만 복사한다.
+	즉 해당 프로퍼티에 대해 원본과 사본이 모두 동일한 참조형 데이터의 주소를 가리키게 된다.
+	따라서, 사본을 바꾸면 원본도 바뀌고 원본을 꾸면 사본도 바뀐다.
+	
+	깊은 복사
+	어떤 객체 내부의 모든 값을 복사해서 완전히 새로운 데이터를 만들고자 할 때 사용한다.
+	객체의 프로퍼티 중 그 값이 기본형 데이터일 경우에는 그대로 복사하면 되지만 참조형 데이터는 다시 그 내부의 프로퍼티들을 복사해야 한다.
+	이 과정을 참조형 데이터가 있을 때마다 재귀적으로 수행해야만 비로소 깊은 복사가 된다.
 
+## 객체의 깊은 복사를 수행하는 범용 함수
+```javascript
+var copyObjectDeep = function(target) {
+  var result = {};
+  if (typeof target === 'object' && target !== null) {  // typeof가 null 도 object로 반환하기 때문
+    for (var prop in target) {
+      result[prop] = copyObjectDeep(target[prop]);
+    }
+  else {
+    result = target;
+  }
+  return result;
+};
+```
+
+## JSON을 활용한 간단한 깊은 복사
+```javascript
+var copyObjectViaJSON = function (target) {
+  return JSON.parse(JSON.stringify(target));
+}
+```
+### undefined와 null
+	undefined
+	사용자가 명시적으로 지정할 수도 있지만 (비추천), 값이 존재하지 않을 때 자바스크립트 엔진이 자동으로 부여한다.
+	- 값을 대입하지 않은 변수. 즉 데이터 영역의 메모리 주소를 지정하지 않은 식별자에 접근할 때
+	- 객체 내부의 존재하지 않는 프로퍼티에 접근하려고 할 때
+	- return 문이 없거나 호출되지 않는 함수의 실행 결과
+
+### null
+비어있음을 명시적으로 나타내고 싶을 때 사용.
