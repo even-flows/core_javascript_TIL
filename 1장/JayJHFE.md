@@ -48,3 +48,25 @@
     할때만 성립한다. 참조형 데이터의 내부 프로퍼티를 변경하게되면, 데이터영역의 주솟값에 대한 변수영역과 데이터 영역
     이 새로 추가된다는 뜻이다.
 
+## 객체 가변성의 문제점
+    ```javascript
+    var user = {
+	name: 'Jaenam',
+  	gender: 'male'
+    };
+    
+    var changeName = function (user, newName) {
+    	var newUser = user;
+      	newUser.name = newName;
+      	return newUser;
+    };
+    
+    var user2 = changeName(user, 'Jung');
+    
+    if (user !== user2) {
+    	console.log('유저 정보가 변경되었습니다.');
+    }
+    console.log(user.name, user2.name); // Jung Jung
+    console.log(user === user2); // true
+    ```
+
