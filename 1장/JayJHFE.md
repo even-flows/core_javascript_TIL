@@ -135,3 +135,19 @@ var copyObjectViaJSON = function (target) {
 
 ### null
 비어있음을 명시적으로 나타내고 싶을 때 사용.
+
+### for in은 순서를 보장받지못하고, for of는 순서를 보장받는다?
+	ES6 이후 자바스크립트에서는 객체 속성들이 다음 순서대로 나열된다
+ 	숫자 키 (정수 속성): 숫자로 된 속성(예: obj[2])은 항상 오름차순으로 먼저 나열된다
+  	문자열 키: 숫자가 아닌 일반 문자열 키(예: obj['name'])는 우리가 추가한 순서대로 나열된다
+   	심볼(Symbol) 키: 마지막으로 Symbol 타입의 키들이 추가 순서대로 나열된다
+```javascript
+let obj = {
+  2: 'two',
+  1: 'one',
+  'b': 'B',
+  'a': 'A'
+};
+
+console.log(Object.keys(obj));  // ['1', '2', 'b', 'a']
+```
