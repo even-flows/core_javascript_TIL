@@ -94,7 +94,8 @@ var obj1 = {
 };
 ```
 
-사진
+![image](https://github.com/user-attachments/assets/0cbd7fb5-c740-423e-8380-1826c5faaad7)
+
 
 - 기본형 데이터와의 차이는 '객체의 변수 영역'이 별도로 존재한다.
 - 객체가 별도로 할애한 영역은 변수 영역이고 데이터 영역은 기존의 메모리 공간을 그대로 활용한다.
@@ -114,7 +115,8 @@ b = 15;
 obj2.c = 20;
 ```
 
-사진
+<img width="456" alt="image" src="https://github.com/user-attachments/assets/0b2a38f2-34a0-476d-aeb5-0b1a4bad31ff">
+
 
 ```js
 a !== b;
