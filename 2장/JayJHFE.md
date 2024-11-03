@@ -101,6 +101,7 @@ function a() {
     console.log(b);
 }
 a();
+```
 
 ## 함수 선언문과 함수 표현식
 > 함수 선언문은 function의 정의만 내린 뒤 별도 할당을 하지않은 것. 함수 표현식은 정의 후 별도의 변수에 할달 한 것.
@@ -111,24 +112,23 @@ a();
 console.log(sum(1, 2));  // 3
 console.log(multiply(3, 4));  // TypeError: multiply is not a function
 
-// sum 함수 (by. 함수 선언문)
 function sum(a, b) {
   return a + b;
 }
 
-// multiply 함수 (by. 함수 표현식)
 var multiply = function (a, b) {
   return a * b;
 };
 ```
+
 이렇게 호이스팅 된다
+
 ```javascript
-// sum 함수 (by. 함수 선언문) -> 함수 전체가 호이스팅됨.
+
 var sum = function sum(a, b) {
   return a + b;
 };
 
-// multiply 함수 (by. 함수 표현식) -> 변수 선언부만 호이스팅됨.
 var multiply;
 
 console.log(sum(1, 2)); // 3
