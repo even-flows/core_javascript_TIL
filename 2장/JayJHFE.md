@@ -1,3 +1,19 @@
+# 실행 컨텍스트
+## Execution context
+Execution context는 자바스크립트 코드가 실행되는 환경을 의미. 자바스크립트에서 대표적으로 두 가지 타입의 Execution context가 있음.
+
+### Global Execution context
+> 자바스크립트 엔진이 처음 코드를 실행할 때 Global Execution Context가 생성. 생성 과정에서 전역 객체인 Window Object (Node는 Global) 를 생성하고 this가 Window 객체를 가리키도록 함.
+
+
+### Function Execution context
+> 자바스크립트 엔진은 함수가 호출 될 때마다 호출 된 함수를 위한 Execution Context를 생성함. 모든 함수는 호출되는 시점에 자신만의 Execution Context를 가짐.
+> * 자바스크립트 엔진은 처음 코드를 실행할 떄 단 한번 Global Execution Context를 생성하며 함수를 호출할 때 마다 함수를 위한 Execution context를 생성함.
+
+### call stack
+> Call Stack은 코드가 실행되면서 생성되는 Execution Context를 저장하는 자료구조. 엔진이 처음 script를 실행할 때, Global Execution Context를 생성하고 이를 Call Stack에 push함. 그 후 엔진이 함수를 호출할 때 마다 함수를 위한 Execution Context를 생성하고 이를 Call Stack에 push 함
+
+자바스크
 ## 실행 컨텍스트 예제
 ```javascript
 function first() {
