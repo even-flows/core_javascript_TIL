@@ -46,3 +46,36 @@ first();
 
 - 호스트 객체 (Host object)
 > 호스트 객체는 window와 같은 BOM, XMLHTTPRequest와 같은 노드나 브라우저 등 런타임, 실행 환경에 의해 제공되는 객체들을 의미
+### 호이스팅
+> 변수 정보를 수집하는 과정에서 엔진이 실제로 끌어올리지는 않지만 편의상 끌어올린 것으로 간주
+
+### 매개변수와 변수에 대한 호이스팅
+```javacript
+function a(x){
+    console.log(x);
+    var x;
+    console.log(x);
+    var x = 2;
+    console.log(x);
+};
+
+a(1);
+```
+
+호이스팅 결과 - 변수의 선언부만 끌어올리고 할당부는 원래 자리에 둠
+
+```javacript
+function a(x){
+    var x; //매개변수 x의 선언부
+    var x; //var x 선언부
+    var x; //var x = 2 선언부
+    
+    x = 1; //매개변수 할당부
+    console.log(x);
+    console.log(x);
+    x = 2; //var x = 2 할당부
+    console.log(x);
+};
+
+a(1);
+```
