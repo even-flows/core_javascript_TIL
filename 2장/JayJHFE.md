@@ -148,15 +148,16 @@ multiply = function (a, b) {
 ## 스코프, 스코프체인, outerEnviromentReference
 ### 스코프(Scope) : 식별자에 대한 유효범위
 
-> 자바스크립트 ES5 까지는 전역공간을 제외하면 오직 함수에 의해서만 스코프가 형성되었다.
+> 자바스크립트 ES5 까지는 전역공간을 제외하면 오직 함수에 의해서만 스코프가 형성되었음
 > ES6 부터는 블록 에서도 스코프 경계가 발생하게 함으로써 다른 언어와 비슷한 스코프 형성이 가능해짐
 > 단, var 변수가 아닌 let, const, class, strict mode 에서의 함수 선언 등에 대해서만 범위로서의 역할을 수행
 > ES6 에서는 둘을 구분하기 위해 함수 스코프(var), 블록 스코프(let, const ...) 라는 용어를 사용
 
 ### 스코프 체인(Scope Chanining) : 이러한 식별자의 유효범위를 안에서부터 바깥으로 차례로 검색해나가는 것
 
-이것을 가능케 하는 것이 바로 LexicalEnviroment 의 두 번째 수집 자료인 outerEnviromentReference
-outerEnviromentReference
+> 스코프 체인을 가능케 하는 것이 바로 LexicalEnviroment 의 두 번째 수집 자료인 outerEnviromentReference
+
+### outerEnviromentReference
 
 현재 호출된 함수가 선언될 당시의 LexicalEnviroment 를 참조한다.
 “선언하다." 라는 행위가 실제로 일어날 수 있는 시점 = 콜 스택 상에서 어떤 실행 컨텍스트가 활성화된 상태일 때
@@ -167,6 +168,6 @@ outerEnviromentReference 는 연결리스트(Linked List) 형태를 띈다.
 이런 구조적 특성 덕분에 여러 스코프에서 동일한 식별자를 선언한 경우에는 무조건 스코프 체인 상에서 가장 먼저 발견된 식별자에만 접근 가능
 변수 은닉화(variable shadowing) : 내부 함수에 선언된 식별자와 내부 함수 외에 선언된 식별자(like. 전역변수) 이름이 같을 때, 스코프 체인 상 가장 가까운 위치 상의 식별자로 접근하므로, 외부에 존재하는 식별자에는 접근할 수 없는 셈인 것
 
-전역변수와 지역변수
-전역변수(global variable) = 전역 공간에서 선언한 변수는 전역 변수
-지역변수(local variable) = 함수 내부에서 선언한 변수는 무조건 지역변수
+## 전역변수와 지역변수
+- 전역변수(global variable) = 전역 공간에서 선언한 변수는 전역 변수
+- 지역변수(local variable) = 함수 내부에서 선언한 변수는 무조건 지역변수
