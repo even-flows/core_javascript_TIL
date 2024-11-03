@@ -13,7 +13,6 @@ Execution context는 자바스크립트 코드가 실행되는 환경을 의미.
 ### call stack
 > Call Stack은 코드가 실행되면서 생성되는 Execution Context를 저장하는 자료구조. 엔진이 처음 script를 실행할 때, Global Execution Context를 생성하고 이를 Call Stack에 push함. 그 후 엔진이 함수를 호출할 때 마다 함수를 위한 Execution Context를 생성하고 이를 Call Stack에 push 함
 
-자바스크
 ## 실행 컨텍스트 예제
 ```javascript
 function first() {
