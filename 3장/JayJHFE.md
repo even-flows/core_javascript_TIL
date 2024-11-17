@@ -49,9 +49,63 @@ var obj = {
 
 obj.methidA(2); // {method: ƒ} 2
 ```
-### 함수로서 호출과 메서드로서의 호출을 구분하는법은 함수앞에 점으로 구분한다.
-### 메서드 내부에서의 this - this에는 호출한 주체(함수명, 프로퍼티명 앞의 객체)에 대한 정보가 담긴다. 마지막 점 앞에 명시된 객체가 곧 this가 되는 것.
+> 함수로서 호출과 메서드로서의 호출을 구분하는법은 함수앞에 점으로 구분한다.
+> 메서드 내부에서의 this - this에는 호출한 주체(함수명, 프로퍼티명 앞의 객체)에 대한 정보가 담긴다. 마지막 점 앞에 명시된 객체가 곧 this가 되는 것.
 
 ## 함수로서 호출할 때 함수 내부에서의 this
 > 함수 내부에서의 this - 어떤 함수를 함수로서 호출할 경우에는 this가 지정되지 않는다. 함수에서의 this는 전역 객체를 가리다.
 > 메서드의 내부 함수에서의 this - 내부 함수 역시 함수로서 호출했는지 메서드로서 호출했는지 파악하면 this의 값을 예측할 수 있다.
+
+사진첨부
+
+## 메서드 내부 함수에서 this를 우회하는 방법
+```javascript
+var obj = {
+  outer: function() {
+    console.log(this);
+    var innerFunc = () => {
+      console.log(this);
+    };
+    innerFunc();
+  }
+};
+obj.outer();  
+```
+
+## 콜백함수 호출 시 그 함수 내부에서의 this
+> 콜백 함수도 함수이기 때문에 기본적으로 전역 객체를 참조하지만, 함수에서 콜백 함수에 별도로 this가 될 대상을 지정한 경우에는 그 대상을 참조하게 된다.
+```javascript
+setTimeout(function() {
+  console.log(this);
+}, 300); // (1)
+
+[1, 2, 3, 4, 5].forEach(function(x) {
+  // (2)
+  console.log(this, x);
+});
+
+document.body.innerHTML += '<button id="a">클릭</button>';
+document.body.querySelector('#a').addEventListener('click', function(e) {
+  // (3)
+  console.log(this, e);
+});
+```
+
+
+## 생성자 함수 내부에서의 this 
+> 생성자 함수란 어떤 공통된 성질을 지니는 객체들을 생성할 때 사용하는 함수이다.
+> 프로그래밍적으로 '생성자'는 구체적인 인스턴스를 만들기 위한 일종의 틀.
+> 틀에는 클래스의 공통 속성들이 미리 준비돼 있고, 여기에 구체적인 인스턴스의 개성을 더해 개별 인스턴스를 만들 수 있다.
+> 자바스크립트는 함수에 생성자로서의 역할을 함께 부여했다. new 명령어와 함께 함수를 호출하면 해당 함수가 생성자로서 동작하게 된다.
+> 어떤 함수가 생성자 함수로서 호출된 경우 내부에서의 this는 곧 새로 만들 구체적인 인스턴스 자신이 된다.
+> 생성자 함수를 new 명령어와 함께 호출하면 우선 생성자의 prototype 프로퍼티를 참조하는 proto라는 프로퍼티가 있는 객체를 만들고, 미리 준비된 공통 속성 및 개성을 해당 객체(this)에 부여한다.
+```javascript
+var Cat = function(name, age) {
+  this.bark = '야옹';
+  this.name = name;
+  this.age = age;
+};
+var choco = new Cat('초코', 7);
+var nabi = new Cat('나비', 5);
+console.log(choco, nabi);
+```
