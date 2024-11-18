@@ -56,7 +56,23 @@ obj.methidA(2); // {method: ƒ} 2
 > 함수 내부에서의 this - 어떤 함수를 함수로서 호출할 경우에는 this가 지정되지 않는다. 함수에서의 this는 전역 객체를 가리다.
 > 메서드의 내부 함수에서의 this - 내부 함수 역시 함수로서 호출했는지 메서드로서 호출했는지 파악하면 this의 값을 예측할 수 있다.
 
-사진첨부
+```javascript
+var obj1 = {
+            outer: function () {
+                console.log(this);                       // (1)
+                    var innerFunc = function () {
+                            console.log(this);           // (2) (3)
+                        }
+                    innerFunc();
+
+                    var obj2 = {
+                            innerMethod: innerFunc
+                    };
+                    obj2.innerMethod();
+                }
+            };
+obj1.outer();
+```
 
 ## 메서드 내부 함수에서 this를 우회하는 방법
 ```javascript
