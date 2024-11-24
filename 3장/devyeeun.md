@@ -594,7 +594,3 @@ console.log(report.sum, report.count, report.average());
 - call, apply 메서드는 this를 명시적으로 지정하면서 함수 또는 메서드를 호출합니다.
 - bind 메서드는 this 및 함수에 넘길 인수를 일부 지정해서 새로운 함수를 만듭니다.
 - 요소를 순회하면서 콜백 함수를 반복 호출하는 내용의 일부 메서드는 별도의 인자로 this를 받기도 합니다.
-
-```
-
-```
