@@ -248,8 +248,353 @@ var Person = function (name, age) {
 var jay = new Person("jay", 30);
 var dave = new Person("dave", 22);
 console.log(jay, dave);
-// Person {name: "jay", age: 30} 
+// Person {name: "jay", age: 30}
 // Person {name: "dave", age: 22}
+```
+
+---
+
+## 명시적으로 this를 바인딩하는 방법
+
+### call 메서드
+
+```javascript
+Function.prototype.call(thisArg[, arg1[, arg2[, ...]]])
+```
+
+call 메서드는 메서드의 호출 주체인 함수를 즉시 실행하도록 하는 명령이다.  
+메서드의 첫 번째 인자로 this로 바인딩할 대상을 지정하고, 이후의 인자로는 호출할 함수에 전달할 인자들을 나열한다.
+
+```javascript
+var func = function (a, b, c, d) {
+  console.log(this, a, b, c, d);
+};
+
+func(1, 2, 3, 4); // window 1 2 3 4
+func.call({ x: 1 }, 4, 5, 6, 7); // {x: 1} 4 5 6 7
+```
+
+함수를 그냥 실행하면 this는 전역객체를 참조하지만. call 메서드를 이용하면 임의의 객체를 this로 지정할 수 있다.
+
+메서드로서 호출할 때도 마찬가지로 그냥 호추하면 this는 해당 객체를 참조하지만, call 메서드를 이용하면 다른 객체를 this로 지정할 수 있다.
+
+```javascript
+var obj = {
+  a: 1,
+  method: function (x, y) {
+    console.log(this.a, x, y);
+  },
+};
+
+obj.method(2, 3); // 1 2 3
+obj.method.call({ a: 4 }, 5, 6); // 4 5 6
+```
+
+### apply 메서드
+
+```javascript
+Function.prototype.apply(thisArg[, argsArray])
+```
+
+apply 메서드는 call 메서드와 완전히 동일한 기능을 수행하지만,  
+call 메서드는 인자를 하나씩 나열하는 방식이라면 apply 메서드는 인자를 배열로 받는다.
+
+```javascript
+var func = function (a, b, c, d) {
+  console.log(this, a, b, c, d);
+};
+
+func(1, 2, 3, 4); // window 1 2 3 4
+func.apply({ x: 1 }, [4, 5, 6, 7]); // {x: 1} 4 5 6 7
+
+var obj = {
+  a: 1,
+  method: function (x, y) {
+    console.log(this.a, x, y);
+  },
+};
+
+obj.method(2, 3); // 1 2 3
+obj.method.apply({ a: 4 }, [5, 6]); // 4 5 6
+```
+
+### call/apply 메서드 활용
+
+#### 유사배열객체에 배열 메서드 적용
+
+유사배열객체는 배열처럼 보이지만, 실제 배열은 아니기 때문에 배열 메서드를 직접 사용할 수 없다.  
+ex) arguments 객체, NodeList 객체
+
+배열처럼 인덱스를 통해 값에 접근하고, length 프로퍼티를 가지고 있지만, 실제 배열 메서드(push, pop, map 등)는 없다. 그래서 이 객체들에는 배열 메서드를 직접 사용할 수 없지만, **call**이나 **apply** 메서드를 사용해서 배열 메서드를 "차용"할 수 있다.
+
+```javascript
+var obj = {
+  0: "a",
+  1: "b",
+  2: "c",
+  length: 3,
+};
+
+Array.prototype.push.call(obj, "d");
+console.log(obj); // {0: "a", 1: "b", 2: "c", 3: "d", length: 4}
+
+var arr = Array.prototype.slice.call(obj);
+console.log(arr); // ['a', 'b', 'c', 'd']
+```
+
+> slice 메서드는 원래 시작 인덱스값과 마지막 인덱스값을 받아 시작값부터 마지막값의 앞 부분까지의 배열 요소를 추출하는 메서드인데, 매개변수를 아무것도 넘기지 않을 경우에는 그냥 원본 배열의 얕은 복사본을 반환한다.
+
+arguments와 querySelectorAll 등의 NodeList 객체도 유사배열객체이므로 배열로 전환해서 활용할 수 있다.
+
+```javascript
+function a() {
+  var argv = Array.prototype.slice.call(arguments);
+  console.log(argv); // [1, 2, 3]
+
+  argv.forEach(function (arg) {
+    console.log(arg); // 1, 2, 3
+  });
+}
+
+a(1, 2, 3);
+
+document.body.innerHTML = "<div>a</div><div>b</div><div>c</div>";
+var nodeList = document.querySelectorAll("div");
+var nodeArr = Array.prototype.slice.call(nodeList);
+nodeArr.forEach(function (node) {
+  console.log(node); // <div>a</div>, <div>b</div>, <div>c</div>
+});
+```
+
+배열처럼 인덱스와 length 프로퍼티를 지니는 문자열에 대해서도 마찬가지이지만,  
+문자열의 경우 length 프로퍼티가 읽기 전용이기 때문에 원본 문자열에 변경을 가하는 메서드(push, pop, shift, unshift, splice 등)는 에러를 던지며,  
+concat 처럼 대상이 반드시 배열이어야 하는 경우에는 에러는 나지 않지만 제대로 된 결과를 얻을 수 없다.
+
+```javascript
+var str = "abc";
+Array.prototype.push.call(str, "def");
+console.log(str); // TypeError: Cannot assign to read only property 'length' of object '[object String]'
+
+Array.prototype.concat.call(str, "def"); // [String {"abc"}, "def"]
+
+var newArr = Array.prototype.map.call(str, function (char) {
+  return char + "!";
+});
+console.log(newArr); // ["a!", "b!", "c!"]
+```
+
+ES6에서는 유사배열객체 또는 순회 가능한 모든 종류의 데이터 타입을 배열로 전환하는 Array.from 메서드를 제공한다.
+
+```javascript
+var obj = {
+  0: "a",
+  1: "b",
+  2: "c",
+  length: 3,
+};
+
+var arr = Array.from(obj);
+console.log(arr); // ["a", "b", "c"]
+```
+
+#### 생성자 내부에서 다른 생성자를 호출
+
+생성자 내부에 다른 생성자와 공통된 내용이 있을 경우 call 또는 apply 메서드를 사용해서 다른 생성자를 호출하면 반복을 줄일 수 있다.
+
+```javascript
+var Person = function (name, age) {
+  this.name = name;
+  this.age = age;
+};
+
+function Student(name, age, school) {
+  Person.call(this, name, age);
+  this.school = school;
+}
+
+function Employee(name, age, company) {
+  Person.apply(this, [name, age]);
+  this.company = company;
+}
+
+var jay = new Student("jay", 30, "Seoul");
+var dave = new Employee("dave", 22, "Google");
+```
+
+#### 여러 인수를 묶어 하나의 배열로 전달하고 싶을 때 - apply 활용
+
+Math.max/Math.min 메서드에 apply를 적용하면 간단하게 최대값과 최소값을 구할 수 있다.
+
+```javascript
+var numbers = [10, 20, 3, 16, 45];
+var max = Math.max.apply(null, numbers);
+var min = Math.min.apply(null, numbers);
+
+console.log(max, min); // 45, 3
+```
+
+ES6에서는 확산 연산자(spread operator)를 사용해 간단하게 최대값과 최소값을 구할 수 있다.
+
+```javascript
+var numbers = [10, 20, 3, 16, 45];
+var max = Math.max(...numbers);
+var min = Math.min(...numbers);
+
+console.log(max, min); // 45, 3
+```
+
+### bind 메서드
+
+```javascript
+Function.prototype.bind(thisArg[, arg1[, arg2[, ...]]])
+```
+
+bind 메서드는 call과 비슷하지만 call/apply 메서드와 달리 함수를 즉시 실행하지 않고,  
+넘겨 받는 this와 인자들을 바인딩한 새로운 함수를 반환한다.
+
+```javascript
+var func = function (a, b, c, d) {
+  console.log(this, a, b, c, d);
+};
+
+func(1, 2, 3, 4); // window 1 2 3 4
+
+var bindFunc1 = func.bind({ x: 1 });
+bindFunc1(5, 6, 7, 8); // {x: 1} 5 6 7 8
+
+var bindFunc2 = func.bind({ x: 1 }, 4, 5);
+bindFunc2(6, 7); // {x: 1} 4 5 6 7
+bindFunc2(8, 9); // {x: 1} 4 5 8 9
+```
+
+#### name 프로퍼티
+
+bind 메서드를 적용해서 새로 만든 함수는 name 프로퍼티에 동사 bind의 수동태인 'bound'가 붙는다.  
+어떤 함수의 name 프로퍼티가 'bound qqq'라면 이는 함수명이 qqq인 원본 함수에 bind 메서드를 적용한 새로운 함수라는 의미이다.
+
+```javascript
+var func = function (a, b, c, d) {
+  console.log(this, a, b, c, d);
+};
+
+var bindFunc = func.bind({ x: 1 }, 4, 5);
+console.log(func.name); // func
+console.log(bindFunc.name); // bound func
+```
+
+#### 상위 컨텍스트의 this를 내부함수나 콜백 함수에 전달하기
+
+call, apply, bind 메서드를 이용하면 메서드의 this를 그대로 바라보게 하기 위한 방법으로 self 등의 변수를 활용한 것을 대체할 수 있다.
+
+```javascript
+// 1) call 메서드를 이용한 방법
+var obj = {
+  outer: function () {
+    console.log(this); // (1) {outer: ƒ}
+    var innerFunc = function () {
+      console.log(this); // (2) {outer: ƒ}
+    };
+    innerFunc.call(this);
+  },
+};
+
+obj.outer();
+
+// 2) bind 메서드를 이용한 방법
+var obj = {
+  outer: function () {
+    console.log(this); // (1) {outer: ƒ}
+    var innerFunc = function () {
+      console.log(this); // (2) {outer: ƒ}
+    }.bind(this);
+
+    innerFunc();
+  },
+};
+
+obj.outer();
+```
+
+### 화살표 함수의 예외사항
+
+화살표 함수는 함수를 실행할 때 this가 바인딩되지 않는다. 이 함수 내부에는 this가 없으며, 접근하려고 하면 스코프상 가장 가까운 this에 접근하게 된다.  
+call/apply/bind를 적용할 필요없이 간결하고 편리하게 this를 사용할 수 있다.
+
+```javascript
+var obj = {
+  outer: function () {
+    console.log(this); // (1) {outer: ƒ}
+    var innerFunc = () => {
+      console.log(this); // (2) {outer: ƒ}
+    };
+    innerFunc();
+  },
+};
+
+obj.outer();
+```
+
+### 별도의 인자로 tihs를 받는 경우(콜백 함수 내에서의 this)
+
+콜백 함수를 인자로 받는 메서드 중 일부는 추가로 this로 지정할 객체(thisArg)를 인자로 지정할 수 있는 경우가 있다.  
+이러한 메서드의 thisArg 값을 지정하면 콜백 함수 내부에서 this 값을 원하는 대로 변경할 수 있다.
+
+```javascript
+var report = {
+  sum: 0,
+  count: 0,
+  add: function () {
+    var args = Array.prototype.slice.call(arguments);
+    console.log(args); // [60, 85, 95];
+    args.forEach(function (entry) {
+      console.log(this);
+      // {sum: 0, count: 0, add: ƒ, average: ƒ}
+      // {sum: 60, count: 1, add: ƒ, average: ƒ}
+      // {sum: 145, count: 2, add: ƒ, average: ƒ}
+      this.sum += entry;
+      ++this.count;
+    }, this);
+  },
+  average: function () {
+    return this.sum / this.count;
+  },
+};
+
+report.add(60, 85, 95);
+console.log(report.sum, report.count, report.average());
+// 240 3 80
+```
+
+> 콜백 함수와 함께 thisArgs를 인자로 받는 메서드
+>
+> - Array.prototype.forEach(callback[, thisArg])
+> - Array.prototype.map(callback[, thisArg])
+> - Array.prototype.filter(callback[, thisArg])
+> - Array.prototype.reduce(callback[, initialValue])
+> - Array.prototype.some(callback[, thisArg])
+> - Array.prototype.every(callback[, thisArg])
+> - Set.prototype.forEach(callback[, thisArg])
+> - Map.prototype.forEach(callback[, thisArg])
+> - ...
+
+---
+
+### this 정리!!
+
+다음 규칙은 명시적 this 바인딩이 없는 한 늘 성립한다.
+
+- 전역공간에서의 this는 전역객체(브라우저에서는 window, Node.js에서는 global)를 참조합니다.
+- 어떤 함수를 메서드로서 호출한 경우 this는 메서드 호출 주체(메서드명 앞의 객체)를 참조합니다.
+- 어떤 함수를 함수로서 호출한 경우 this는 전역객체를 참조합니다. 메서드의 내부함수에서도 같습니다.
+- 콜백 함수 내부에서의 this는 해당 콜백 함수의 제어권을 넘겨받은 함수가 정의한 바에 따르며, 정의하지 않은 경우에는 전역객체를 참조합니다.
+- 생성자 함수에서의 this는 생성될 인스턴스를 참조합니다.
+
+다음은 명시적 this 바인딩이다.
+
+- call, apply 메서드는 this를 명시적으로 지정하면서 함수 또는 메서드를 호출합니다.
+- bind 메서드는 this 및 함수에 넘길 인수를 일부 지정해서 새로운 함수를 만듭니다.
+- 요소를 순회하면서 콜백 함수를 반복 호출하는 내용의 일부 메서드는 별도의 인자로 this를 받기도 합니다.
 
 ```
 
+```
