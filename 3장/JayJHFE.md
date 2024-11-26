@@ -125,3 +125,126 @@ var choco = new Cat('초코', 7);
 var nabi = new Cat('나비', 5);
 console.log(choco, nabi);
 ```
+# 명시적으로 this를 바인딩 하는 방법
+아래 메서드들을 통해 this에 별도의 대상을 바인딩 할 수 있다. 
+- call 메서드
+```javascript
+Function.prototype.call(thisArg[, arg1[, arg2[, ...]]])
+```
+> 메서드의 호출 주체인 함수를 즉시 실행하도록 명령
+> call 메서드의 첫 번째 인자를 this로 바인딩하고, 이후의 인자들을 호출할 함수의 매개변수로 함
+> 즉, 함수를 그냥 실행하면 this는 전역객체를 참조하지만, call 메서드를 이용하면 임의의 객체를 this로 지정 가능
+```javascript
+var func = function (a, b, c) {
+	console.log(this, a, b, c);
+}
+
+func(1, 2, 3); // Window{ ... } 1 2 3
+func.call({ x: 1}, 4, 5, 6); // { x:1 } 4 5 6
+```
+- apply 메서드
+```javascript
+Function.prototype.apply(thisArg[, argsArray])
+```
+> call 메서드와 기능적으로 동일. 다만, 두번째 인자를 배열로 받아 그 배열의 요소들을 호출할 함수의 매개변수로 지정
+```javascript
+var func = function (a, b, c) {
+	console.log(this, a, b, c);
+}
+
+func(1, 2, 3); // Window{ ... } 1 2 3
+func.apply({ x: 1}, [4, 5, 6]); // { x:1 } 4 5 6
+```
+- call / apply 메서드를 활용해 중복을 줄일 수 있다. 아래 예시는 생성자 내부에 다른 생성자와 공통된 내용이 있을 경우 call 또는 apply를 이용해 다른 생성자를 호출해 반복을 줄이는 예시:
+```javascript
+function Person(name, gender) {
+  this.name = name;
+  this.gender = gender;
+}
+
+function Student(name, gender, school) {
+  Person.call(this, name, gender);
+  this.school = school;
+}
+
+function Employee(name, gender, company) {
+  Person.call(this, name, gender);
+  this.company = company;
+}
+
+var by = new Student("보영", "female", "단국대");
+var jn = new Employee("재난", "male", "구글");
+```
+
+- bind 메서드
+> 함수 바인딩이란 특정한 this값과 특정한 매개변수를 넘기면서 다른 함수를 호출하는 함수. 많은 자바스크립트
+> 라이브러리들은 함수를 특정한 컨텍스트에 묶는 함수를 만들었다. 일반적으로 이런 함수를 bind()라고 부른다.
+> 기본 구조는 아래와 같다.
+```javascript
+function bind(fn, context){
+    return function(){
+        return fn.apply(context, arguments);
+    }
+}
+```
+> ECMAScript5에서 bind()메서드가 도입되었으며 아래와 같이 사용한다.
+```javascript
+Function.prototype.bind(thisArg[, arg1[, arg2[, ...]]])
+```
+> ES5에서 추가된 기능. call 과 비슷하지만, 즉시 호출하지는 않고 넘겨 받은 this 및 인수들을 바탕으로 새로운
+> 함수 반환.
+> 즉, bind 메서드는 함수에 this를 미리 적용하는 것과 부분 적용 함수를 구현하는 두 가지 목적을 지님
+```javascript
+var func = function (a, b, c, d){
+  console.log(this, a, b, c, d);
+}
+func(1, 2, 3, 4);   // Window{...} 1 2 3 4
+
+var bindFunc1 = func.bind({ x: 1 });
+bindFunc1(5, 6, 7, 8);  // { x: 1 } 5 6 7 8
+
+var bindFunc2 = func.bind({ x: 1 }, 4, 5);
+bindFunc2(6, 7);     // { x: 1} 4 5 6 7
+bindFunc2(8, 9);     // { x: 1} 4 5 8 9
+```
+- 화살표 함수의 예외사항
+> ES6에 새롭게 도입된 화살표 함수는 실행 컨텍스트 생성 시 this를 바인딩 하는 과정이 제외됨.
+> 즉, 이 함수 내부에는 this가 아예 없으며, 접근하고자 하면 스코프체인상 가장 가까운 this에 접근
+```javascript
+var obj = {
+  outer: function() {
+    console.log(this);  // { outer: [Function: outer] }
+    var innerFunc = () => {
+      console.log(this);  // { outer: [Function: outer] }
+    }
+    innerFunc();
+  }
+}
+obj.outer();
+```
+- 별도의 인자로 this를 받는 경우 (콜백 함수 내에서의 this)
+
+> 콜백 함수를 인자로 받는 메서드 중 일부는 추가로 this로 지정할 객체(thisArg)를 인자로 지정할 수 있는 경우> 가 있음.
+> 배열 메서드에 이러한 경우가 많이 있으며, 대표적인 예로 forEach가 있음 (ex. foreach, map, filter, > some, every, find, findIndex, flatMap, from, 그리고 ES6의 Set, Map)
+
+foreach 메서드 예시:
+```javascript
+var report = {
+  sum: 0,
+  count: 0,
+  add: function () {
+		// arguments 를 배열로 변환해서 args 변수에 담는다
+    var args = Array.prototype.slice.call(arguments); 
+		// 해당 배열(args)를 순회하면서 콜백 함수 실행
+    args.forEach(function (entry) {
+      this.sum += entry;
+      ++this.count;
+    }, this); // 콜백 함수 내부에서의 this가 해당 this로 바인딩 됨! 
+  },
+  average: function () {
+    return this.sum / this.count;
+  },
+};
+report.add(60, 85, 95);
+console.log(report.sum, report.count, report.average()); // 240 3 80
+```
