@@ -410,7 +410,8 @@ bindFunc2(7, 8); // {x: 1} 4 5 7 8
 #### name 프로퍼티
 
 - 특징으로 bind 메서드로 만들어진 함수는 bound라는 접두어가 붙는다 -> 기존의 call, apply보다 코드를 추적하기 더 수월
-- 사진
+![스크린샷 2024-11-26 오후 4 55 11](https://github.com/user-attachments/assets/250985cc-64fc-4d94-8eed-9fb077552d7c)
+
 
 #### 상위 컨텍스트의 this를 내부함수나 콜백 함수에 전달하기
 
